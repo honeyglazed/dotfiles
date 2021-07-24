@@ -109,8 +109,10 @@ fi
 #
 # Example aliases
  alias zshconfig="nvim ~/.zshrc"
+ alias alaconfig="nvim ~/.config/alacritty/alacritty.yml"
  alias vim="nvim"
  alias oldvim="vim"
+ alias python="python3"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
 
