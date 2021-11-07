@@ -1,0 +1,33 @@
+# Configuration for Alacritty
+
+font:
+  size: 11.0
+  normal:
+    family: Fira Mono
+    # family: DM Mono
+      #family: hzeep
+    style: Regular
+
+colors:
+  primary:
+    black: #000000
+    background: '#1E1E1E'
+    foreground: '#CCCCCC'
+  normal:
+    black: '#6A787A' #000000
+    red: '#E9653B'
+    green: '#39E9A8'
+    yellow: '#E5B684'
+    blue: '#44AAE6'
+    magenta: '#E17599'
+    cyan: '#3DD5E7'
+    white: '#C3DDE1'
+  bright:
+    black: '#598489' #000000
+    red: '#E65029'
+    green: '#00FF9A'
+    yellow: '#E89440'
+    blue: '#009AFB'
+    magenta: '#FF578F'
+    cyan: '#5FFFFF'
+    white: '#D9FBFF'

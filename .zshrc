@@ -113,6 +113,7 @@ fi
  alias vim="nvim"
  alias oldvim="vim"
  alias python="python3"
+ alias ho="cd ~/"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
 
