@@ -53,10 +53,10 @@ nnoremap _ _i
 nnoremap <leader>c :noh<CR>
 
 " Move to the next item in buffer
-nnoremap <TAB> :bnext<CR>
-nnoremap <S-TAB> :bp<CR>
+nnoremap <TAB> :BufferNext<CR>
+nnoremap <S-TAB> :BufferPrevious<CR>
 " Delete current item in buffer
-nnoremap <C-x> :bd<CR>
+nnoremap <C-x> :BufferClose<CR>
 
 nnoremap <C-s> :w<CR>
 inoremap <C-s> <ESC>:w<CR>i
@@ -88,6 +88,8 @@ nnoremap <leader>p "+p
 :nnoremap <Left> <nop>
 :nnoremap <Right> <nop>
 
+let g:vim_json_conceal=0
+
 " Compile and run C++ files
 augroup cpp
   autocmd!
@@ -98,6 +100,11 @@ augroup END
 augroup pythonlang
   autocmd!
   autocmd Filetype python nnoremap <F8> :w <bar> !python3 %:p <CR>
+augroup END
+
+augroup rustlang
+  autocmd!
+  autocmd Filetype rust nnoremap <F8> :w <bar> !rustc %:p -o %:p:h/bin/%:t:r && %:p:h/bin/%:t:r <CR>
 augroup END
 
 " Use template files
@@ -170,7 +177,7 @@ set completeopt=menuone,noselect
 inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 let g:compe = {}
-let g:compe.enabled = v:false
+let g:compe.enabled = v:true
 let g:compe.autocomplete = v:false
 let g:compe.debug = v:false
 let g:compe.min_length = 1
