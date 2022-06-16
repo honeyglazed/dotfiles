@@ -10,9 +10,15 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'hrsh7th/nvim-compe'
 Plug 'tpope/vim-surround'
 Plug 'romgrk/barbar.nvim'
+Plug 'norcalli/nvim-colorizer.lua'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'tpope/vim-commentary'
 call plug#end()
 
 syntax on
@@ -37,6 +43,7 @@ set scrolloff=8
 set incsearch
 set noswapfile
 set nobackup
+set termguicolors
 
 colorscheme codedark
 highlight Normal guibg=none ctermbg=none
@@ -102,6 +109,7 @@ augroup pythonlang
   autocmd Filetype python nnoremap <F8> :w <bar> !python3 %:p <CR>
 augroup END
 
+" Compile and run Rust files
 augroup rustlang
   autocmd!
   autocmd Filetype rust nnoremap <F8> :w <bar> !rustc %:p -o %:p:h/bin/%:t:r && %:p:h/bin/%:t:r <CR>
@@ -129,6 +137,16 @@ fun! TrimWhitespace()
   call winrestview(l:save)
 endfun
 
+" Format C++ files
+augroup formatsave
+  autocmd!
+  autocmd BufWritePre *.h *.cc execute 'bin/clang-format -i'.expand("%:p")
+augroup END
+
+augroup formatpysave
+  autocmd!
+augroup END
+
 augroup clearwhitespace
   autocmd!
   autocmd BufWritePre * :call TrimWhitespace()
@@ -150,21 +168,42 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 
 " Language Server
 lua << EOF
-require'lspconfig'.clangd.setup{}
-require'lspconfig'.pyright.setup{}
-require'lspconfig'.tsserver.setup{}
+local nvim_lsp = require'lspconfig'
+nvim_lsp.clangd.setup{}
+nvim_lsp.pyright.setup{}
+nvim_lsp.tsserver.setup{}
+nvim_lsp.rust_analyzer.setup({
+    on_attach=on_attach,
+    settings = {
+        ["rust-analyzer"] = {
+            assist = {
+                importGranularity = "module",
+                importPrefix = "self",
+            },
+            cargo = {
+                loadOutDirsFromCheck = true
+            },
+            procMacro = {
+                enable = true
+            },
+        }
+    }
+})
 EOF
+
 highlight LspDiagnosticsVirtualTextError guifg=Red ctermfg=Red
 highlight LspDiagnosticsVirtualTextWarning guifg=Yellow ctermfg=Yellow
 nnoremap <silent><C-d> <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent><C-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
-nnoremap <silent><C-f> <cmd>lua vim.lsp.buf.formatting()<CR>
+nnoremap <silent><C-f> <cmd>lua vim.lsp.buf.format()<CR>
+nnoremap <silent><C-g> <cmd>lua vim.lsp.buf.code_action()<CR>
+nnoremap <silent><gd> <cmd>lua vim.lsp.buf.definition()<CR>
 
 
 " Treesitter
 lua << EOF
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = {"cpp", "python", "typescript"},
+  ensure_installed = {"cpp", "python", "typescript", "rust"},
   ignore_install = {},
   highlight = {
     enable = true
@@ -172,30 +211,44 @@ require'nvim-treesitter.configs'.setup {
   }
 EOF
 
+" Colorizer
+lua << EOF
+require'colorizer'.setup()
+EOF
+
 "Autocompletion
-set completeopt=menuone,noselect
-inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-let g:compe = {}
-let g:compe.enabled = v:true
-let g:compe.autocomplete = v:false
-let g:compe.debug = v:false
-let g:compe.min_length = 1
-let g:compe.preselect = 'enable'
-let g:compe.throttle_time = 80
-let g:compe.source_timeout = 200
-let g:compe.resolve_timeout = 800
-let g:compe.incomplete_delay = 400
-let g:compe.max_abbr_width = 100
-let g:compe.max_kind_width = 100
-let g:compe.max_menu_width = 100
-let g:compe.documentation = v:true
+set completeopt=menuone,noselect,noinsert
+lua << EOF
+local cmp = require'cmp'
+cmp.setup({
+  -- Enable LSP snippets
+  snippet = {
+    expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body)
+    end,
+  },
+  mapping = {
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    -- Add tab support
+    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+    ['<Tab>'] = cmp.mapping.select_next_item(),
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.close(),
+    ['<CR>'] = cmp.mapping.confirm({
+      behavior = cmp.ConfirmBehavior.Insert,
+      select = true,
+    })
+  },
 
-let g:compe.source = {}
-let g:compe.source.path = v:true
-let g:compe.source.buffer = v:true
-let g:compe.source.nvim_lsp = v:true
-
-"Buferr
-let g:bufferline = {}
-let g:bufferline.icons = v:false
+  -- Installed sources
+  sources = {
+    { name = 'nvim_lsp' },
+    { name = 'vsnip' },
+    { name = 'path' },
+    { name = 'buffer' },
+  },
+})
+EOF

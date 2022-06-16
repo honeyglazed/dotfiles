@@ -114,8 +114,13 @@ fi
  alias oldvim="vim"
  alias python="python3"
  alias ho="cd ~/"
+ alias cl="clear"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-#
+
+
+export ANDROID=~/android-studio/bin/studio.sh
+export PATH=$PATH:/home/michaelho/.local/bin:/home/michaelho/.local/share/solana/install/active_release/bin
+. "$HOME/.cargo/env"
 
 zstyle ':completion:*' menu select
 
