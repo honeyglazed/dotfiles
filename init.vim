@@ -6,7 +6,7 @@ Plug 'tomasiser/vim-code-dark'
 Plug 'mhinz/vim-startify'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag' : '0.1.8' }
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -172,7 +172,6 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
   local nvim_lsp = require'lspconfig'
   nvim_lsp.clangd.setup{}
   nvim_lsp.pyright.setup{}
-  nvim_lsp.tsserver.setup{}
   nvim_lsp.rust_analyzer.setup({
       on_attach=on_attach,
       settings = {
