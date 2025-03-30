@@ -19,6 +19,7 @@ Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'tpope/vim-commentary'
+Plug 'nvim-tree/nvim-web-devicons'
 call plug#end()
 
 syntax on
@@ -160,35 +161,35 @@ let g:netrw_liststyle=3
 let g:netrw_altv=1
 
 " Telescope
-lua << EOF
-require('telescope-config')
+:lua << EOF
+  require('telescope-config')
 EOF
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 
 " Language Server
-lua << EOF
-local nvim_lsp = require'lspconfig'
-nvim_lsp.clangd.setup{}
-nvim_lsp.pyright.setup{}
-nvim_lsp.tsserver.setup{}
-nvim_lsp.rust_analyzer.setup({
-    on_attach=on_attach,
-    settings = {
-        ["rust-analyzer"] = {
-            assist = {
-                importGranularity = "module",
-                importPrefix = "self",
-            },
-            cargo = {
-                loadOutDirsFromCheck = true
-            },
-            procMacro = {
-                enable = true
-            },
-        }
-    }
-})
+:lua << EOF
+  local nvim_lsp = require'lspconfig'
+  nvim_lsp.clangd.setup{}
+  nvim_lsp.pyright.setup{}
+  nvim_lsp.tsserver.setup{}
+  nvim_lsp.rust_analyzer.setup({
+      on_attach=on_attach,
+      settings = {
+          ["rust-analyzer"] = {
+              assist = {
+                  importGranularity = "module",
+                  importPrefix = "self",
+              },
+              cargo = {
+                  loadOutDirsFromCheck = true
+              },
+              procMacro = {
+                  enable = true
+              },
+          }
+      }
+  })
 EOF
 
 highlight LspDiagnosticsVirtualTextError guifg=Red ctermfg=Red
@@ -201,54 +202,54 @@ nnoremap <silent><gd> <cmd>lua vim.lsp.buf.definition()<CR>
 
 
 " Treesitter
-lua << EOF
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = {"cpp", "python", "typescript", "rust"},
-  ignore_install = {},
-  highlight = {
-    enable = true
+:lua << EOF
+  require'nvim-treesitter.configs'.setup {
+    ensure_installed = {"cpp", "python", "typescript", "rust"},
+    ignore_install = {},
+    highlight = {
+      enable = true
+      }
     }
-  }
 EOF
 
 " Colorizer
-lua << EOF
-require'colorizer'.setup()
+:lua << EOF
+  require'colorizer'.setup()
 EOF
 
 "Autocompletion
 set completeopt=menuone,noselect,noinsert
-lua << EOF
-local cmp = require'cmp'
-cmp.setup({
-  -- Enable LSP snippets
-  snippet = {
-    expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body)
-    end,
-  },
-  mapping = {
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-n>'] = cmp.mapping.select_next_item(),
-    -- Add tab support
-    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-    ['<Tab>'] = cmp.mapping.select_next_item(),
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.close(),
-    ['<CR>'] = cmp.mapping.confirm({
-      behavior = cmp.ConfirmBehavior.Insert,
-      select = true,
-    })
-  },
+:lua << EOF
+  local cmp = require'cmp'
+  cmp.setup({
+    -- Enable LSP snippets
+    snippet = {
+      expand = function(args)
+          vim.fn["vsnip#anonymous"](args.body)
+      end,
+    },
+    mapping = {
+      ['<C-p>'] = cmp.mapping.select_prev_item(),
+      ['<C-n>'] = cmp.mapping.select_next_item(),
+      -- Add tab support
+      ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+      ['<Tab>'] = cmp.mapping.select_next_item(),
+      ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.close(),
+      ['<CR>'] = cmp.mapping.confirm({
+        behavior = cmp.ConfirmBehavior.Insert,
+        select = true,
+      })
+    },
 
-  -- Installed sources
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'vsnip' },
-    { name = 'path' },
-    { name = 'buffer' },
-  },
-})
+    -- Installed sources
+    sources = {
+      { name = 'nvim_lsp' },
+      { name = 'vsnip' },
+      { name = 'path' },
+      { name = 'buffer' },
+    },
+  })
 EOF
