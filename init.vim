@@ -8,16 +8,10 @@ Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag' : '0.1.8' }
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
-Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'tpope/vim-surround'
 Plug 'romgrk/barbar.nvim'
 Plug 'norcalli/nvim-colorizer.lua'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
-Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-path'
 Plug 'tpope/vim-commentary'
 Plug 'nvim-tree/nvim-web-devicons'
 call plug#end()
@@ -45,6 +39,7 @@ set incsearch
 set noswapfile
 set nobackup
 set termguicolors
+set backupcopy=yes
 
 colorscheme codedark
 highlight Normal guibg=none ctermbg=none
@@ -167,30 +162,6 @@ EOF
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 
-" Language Server
-:lua << EOF
-  local nvim_lsp = require'lspconfig'
-  nvim_lsp.clangd.setup{}
-  nvim_lsp.pyright.setup{}
-  nvim_lsp.rust_analyzer.setup({
-      on_attach=on_attach,
-      settings = {
-          ["rust-analyzer"] = {
-              assist = {
-                  importGranularity = "module",
-                  importPrefix = "self",
-              },
-              cargo = {
-                  loadOutDirsFromCheck = true
-              },
-              procMacro = {
-                  enable = true
-              },
-          }
-      }
-  })
-EOF
-
 highlight LspDiagnosticsVirtualTextError guifg=Red ctermfg=Red
 highlight LspDiagnosticsVirtualTextWarning guifg=Yellow ctermfg=Yellow
 nnoremap <silent><C-d> <cmd>lua vim.lsp.buf.hover()<CR>
@@ -199,56 +170,7 @@ nnoremap <silent><C-f> <cmd>lua vim.lsp.buf.format()<CR>
 nnoremap <silent><C-g> <cmd>lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent><gd> <cmd>lua vim.lsp.buf.definition()<CR>
 
-
-" Treesitter
-:lua << EOF
-  require'nvim-treesitter.configs'.setup {
-    ensure_installed = {"cpp", "python", "typescript", "rust"},
-    ignore_install = {},
-    highlight = {
-      enable = true
-      }
-    }
-EOF
-
 " Colorizer
 :lua << EOF
   require'colorizer'.setup()
-EOF
-
-"Autocompletion
-set completeopt=menuone,noselect,noinsert
-:lua << EOF
-  local cmp = require'cmp'
-  cmp.setup({
-    -- Enable LSP snippets
-    snippet = {
-      expand = function(args)
-          vim.fn["vsnip#anonymous"](args.body)
-      end,
-    },
-    mapping = {
-      ['<C-p>'] = cmp.mapping.select_prev_item(),
-      ['<C-n>'] = cmp.mapping.select_next_item(),
-      -- Add tab support
-      ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-      ['<Tab>'] = cmp.mapping.select_next_item(),
-      ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-      ['<C-f>'] = cmp.mapping.scroll_docs(4),
-      ['<C-Space>'] = cmp.mapping.complete(),
-      ['<C-e>'] = cmp.mapping.close(),
-      ['<CR>'] = cmp.mapping.confirm({
-        behavior = cmp.ConfirmBehavior.Insert,
-        select = true,
-      })
-    },
-
-    -- Installed sources
-    sources = {
-      { name = 'nvim_lsp' },
-      { name = 'vsnip' },
-      { name = 'path' },
-      { name = 'buffer' },
-    },
-  })
 EOF

@@ -9,7 +9,7 @@ fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/michael/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -79,8 +79,8 @@ ZSH_THEME="af-magic"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
-  zsh-autosuggestions
-  zsh-syntax-highlighting # must be last
+  # zsh-autosuggestions
+  # zsh-syntax-highlighting # must be last
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -109,20 +109,22 @@ fi
 #
 # Example aliases
  alias zshconfig="nvim ~/.zshrc"
- alias alaconfig="nvim ~/.config/alacritty/alacritty.yml"
- alias vim="nvim"
- alias oldvim="vim"
  alias python="python3"
  alias ho="cd ~/"
  alias cl="clear"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 
-export ANDROID=~/android-studio/bin/studio.sh
-export PATH=$PATH:/home/michaelho/.local/bin:/home/michaelho/.local/share/solana/install/active_release/bin
-. "$HOME/.cargo/env"
+export PATH="$HOME/.local/bin:$PATH"
 
 zstyle ':completion:*' menu select
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# Disable the green background for "Other Writable" (ow) and "Sticky Other Writable" (tw)
+export LS_COLORS=$LS_COLORS:'ow=01;34:tw=01;34:'
+
+# oh-my-posh
+eval "$(oh-my-posh init zsh --config ~/.poshthemes/stelbent.minimal.omp.json)"
+
+# Prevent SIGPIPE (141) from being reported by git
+export GPG_TTY=$(tty)
+export LESS="-R"
